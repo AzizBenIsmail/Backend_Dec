@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/cars', carsRouter);
-app.use('/users_test', usersRouter);
+app.use('/users', usersRouter);
 app.use('/os', osRouter);
 
 // catch 404 and forward to error handler
