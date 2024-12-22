@@ -1,9 +1,9 @@
 const fs = require("fs");
-
+const logModel = require("../models/logModel");
 function logMiddleware(req, res, next) {
   const startTime = new Date(); // Temps de début de la requête
 
-  res.on("finish", () => {
+  res.on("finish",async () => {
     const headers = JSON.stringify(req.headers);
     const endTime = new Date(); // Temps de fin de la requête
     const executionTime = endTime - startTime; // Temps d'exécution en millisecondes
@@ -23,8 +23,25 @@ function logMiddleware(req, res, next) {
       Résultat: ${res.locals.data || "N/A"}
     `;
 
+    const logEntry = {
+        timestamp: new Date(),
+        method: req.method,
+        url: req.originalUrl,
+        ip: req.ip,
+        referer: req.headers.referer || "N/A",
+        status: res.statusCode,
+        user: req.user ? { id: req.user._id, username: req.user.username } : null,
+        headers: req.headers,
+        executionTime: new Date() - startTime, // Temps d'exécution en millisecondes
+        requestBody: Object.keys(req.body).length > 0 ? req.body : null,
+        result: res.locals.data || "N/A",
+      };
+
+
     try {
       fs.appendFileSync("app.log", log);
+      await logModel.create(logEntry)
+
     } catch (err) {
       console.error("Erreur lors de l'enregistrement dans le fichier journal :", err);
     }
