@@ -1,6 +1,6 @@
 const yup = require("yup");
 
-const userValidationSchema = yup.object({
+const ValidationUserSchema = yup.object({
   username: yup
     .string()
     .required("Le nom est obligatoire")
@@ -24,8 +24,24 @@ const userValidationSchema = yup.object({
       /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@$!%*?&])/,
       "le mdp doit etre Exemple: Sazr123"
     ),
-  role: yup.string.oneOf(["admin", "client"]),
-  cars: yup.array().matches("/^[0-9a-fA-F]{24}$/").notRequired(),
+  role: yup.string().oneOf(["admin", "client"]),
+  cars: yup
+    .array()
+    .of(yup.string().matches(/^[0-9a-fA-F]{24}$/, "invalide"))
+    .notRequired(),
 });
 
-module.exports = userValidationSchema;
+function ValidationUser(req, res, next) {
+  ValidationUserSchema.validate(req.body)
+    .then(() => {
+      next();
+    })
+    .catch((err) => {
+      res.status(400).json({
+        message: "Validation des données échouée",
+        errors: err.errors,
+      });
+    });
+}
+
+module.exports = ValidationUser;

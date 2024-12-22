@@ -2,12 +2,13 @@ var express = require('express');
 var router = express.Router();
 const userController = require('../controllers/userController');
 const uploadFile = require('../middlewares/uploadFile')
+const ValidationUser = require('../middlewares/validationUser');
 /* GET users listing. */
 router.get('/getAllUsers',userController.getAllUsers );
 router.get('/getSortUsersByAge',userController.getSortUsersByAge );
 router.get('/getSortUsersByDate',userController.getSortUsersByDate );
 router.get('/searchUsersByUsername',userController.searchUsersByUsername );
-router.post('/addUserClient',userController.addUserClient );
+router.post('/addUserClient',ValidationUser,userController.addUserClient );
 router.post('/addUserWithImg',uploadFile.single("image_user"),userController.addUserWithImg );
 router.put('/updateUser/:id',userController.updateUser );
 router.put('/updatepassword/:id',userController.updatepassword );
