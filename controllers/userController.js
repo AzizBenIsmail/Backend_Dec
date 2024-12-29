@@ -52,6 +52,7 @@ module.exports.getAllUsers = async (req, res) => {
   module.exports.updateUser = async (req, res) => {
     try {
         const {id} = req.params;
+        //const id = req.session.user._id
         const {email,username,age} = req.body;
         const updated = await userModel.findByIdAndUpdate(
             id,

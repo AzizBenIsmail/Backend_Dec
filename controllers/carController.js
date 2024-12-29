@@ -63,8 +63,10 @@ module.exports.getCarById = async (req, res) => {
 
 module.exports.affectation = async (req, res) => {
   try {
-    const { idCar, idOwner } = req.body;
+    const { idCar } = req.body;
     
+    const idOwner = req.session.user_id;
+
     const car = await carModel.findByIdAndUpdate(
       idCar,
       { owner: idOwner },
