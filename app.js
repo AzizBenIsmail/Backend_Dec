@@ -6,13 +6,15 @@ var logger = require('morgan');
 const http = require('http');  //1
 const {connectToMongoDB} = require('./db/db.js')
 const logMiddleware = require('./middlewares/logsMiddlewares.js');
+const session = require('express-session');
 
 require("dotenv").config();
 
 var indexRouter = require('./routes/index');
 var osRouter = require('./routes/os.js');
-var carsRouter = require('./routes/cars.js');
-var usersRouter = require('./routes/users');
+var carsRouter = require('./routes/carsRouter.js');
+var usersRouter = require('./routes/usersRouter.js');
+var authRouter = require('./routes/authRouter.js');
 
 var app = express();
 
@@ -24,9 +26,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(logMiddleware)
 
+app.use(session({
+  secret: process.env.Net_Secret,
+  resave:false,
+  saveUninitialized:true,
+  cookie: {
+    secure: false,
+    maxAge: 24 * 60 *60 *1000
+  }
+}))
+
 app.use('/', indexRouter);
 app.use('/cars', carsRouter);
 app.use('/users', usersRouter);
+app.use('/auth', authRouter);
 app.use('/os', osRouter);
 
 // catch 404 and forward to error handler
